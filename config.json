@@ -1,5 +1,21 @@
 {
-	"Files": [
-		"./test.txt"
-	]
+	"Files": {
+		"./test.txt": "admin",
+		"./test2.txt": "sess"
+	},
+	"Queues": {
+		"mail": {
+			"admin": {
+				"From": "noreply@itshosted.nl",
+				"To": ["errors@itshosted.nl"],
+				"Subject": "[FILE] Diff"
+			}
+		},
+		"newline": {
+			"sess": {
+				"To": "127.0.0.1:11300",
+				"Queue": "sess"
+			}
+		}
+	}
 }

@@ -8,7 +8,18 @@ import (
 )
 
 type Config struct {
-	Files []string
+	Files map[string]string
+	Queues struct {
+		Mail map[string]struct {
+			From string
+			To []string
+			Subject string
+		}
+		Newline map[string]struct {
+			To string
+			Queue string
+		}
+	}
 }
 
 var (
