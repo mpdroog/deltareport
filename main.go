@@ -3,11 +3,10 @@ package main
 import (
 	"fmt"
 	"deltareport/config"
+	"deltareport/model"
+	"deltareport/diff"
 	"flag"
-	"github.com/boltdb/bolt"
-	"os"
-	"strconv"
-	"strings"
+	//"strings"
 )
 
 func main() {
@@ -19,52 +18,33 @@ func main() {
 	if e := config.Init(configPath); e != nil {
 		panic(e)
 	}
-	for _, fileName := range config.C.Files {
-		// TODO: missing err?
-	    config.DB.Update(func(tx *bolt.Tx) error {
-			bucket, e := tx.CreateBucketIfNotExists([]byte("filepos"))
-		    if e != nil {
-		        return fmt.Errorf("create bucket: %s", e.Error())
-		    }
+	// TODO: Handle toggling recurse true/false
+	for path, meta := range config.C.Files {
+		pos, e := model.Pos(path)
+		if e != nil {
+			panic(e)
+		}
 
-		    start := 0
-		    val := bucket.Get([]byte(fileName))
-		    if val != nil {
-		    	i, e := strconv.Atoi(string(val))
-		    	if e != nil {
-		    		return e
-		    	}
-		    	start = i
-		    }
+		lookup := make(map[string]diff.Res)
+		if meta.Recurse {
+			lookup, e = diff.Recurse(path, pos)
+		} else {
+			lookup[path], e = diff.File(path, pos[path])
+		}
+		if e != nil {
+			panic(e)
+		}
 
-		    file, e := os.Open(fileName)
-		    if e != nil {
-		    	return e
-		    }
-		    stat, e := file.Stat()
-		    if e != nil {
-		    	return e
-		    }
-		    size := stat.Size()
-		    if size < int64(start) {
-		    	// reset as file got truncated
-		    	start = 0
-		    }
-		    if size != int64(start) {
-		    	// Write diff to stdout
-		    	buf := make([]byte, size-int64(start))
-		    	if _, e := file.ReadAt(buf, int64(start)); e != nil {
-		    		return e
-		    	}
-		    	msg := string(buf)
-		    	msg = strings.Trim(msg, "\r")
-		    	msg = strings.Trim(msg, "\n")
-		    	fmt.Println(msg)
+		// show diff
+		fmt.Printf("%+v\n", lookup)
 
-		    	// Remember pos
-		    	bucket.Put([]byte(fileName), []byte(strconv.FormatInt(size, 10)))
-		    }
-		    return nil
-		})
+		// save new file positions
+		newPos := make(map[string]int64)
+		for file, meta := range lookup {
+			newPos[file] = meta.Pos
+		}
+		if e := model.SavePos(path, newPos); e != nil {
+			panic(e)
+		}
 	}
 }

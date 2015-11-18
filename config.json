@@ -1,7 +1,13 @@
 {
 	"Files": {
-		"./test.txt": "admin",
-		"./test2.txt": "sess"
+		"./test.txt": {
+			"To": "admin",
+			"Recurse": false
+		},
+		"./test.d": {
+			"To": "sess",
+			"Recurse": true
+		}
 	},
 	"Queues": {
 		"mail": {

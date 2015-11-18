@@ -5,10 +5,14 @@ import (
 	"github.com/boltdb/bolt"
 	"encoding/json"
 	"os"
+	"time"
 )
 
 type Config struct {
-	Files map[string]string
+	Files map[string]struct {
+		To string
+		Recurse bool
+	}
 	Queues struct {
 		Mail map[string]struct {
 			From string
@@ -37,7 +41,7 @@ func Init(f string) error {
 		return e
 	}
 
-	DB, e = bolt.Open("delta.db", 0600, nil)
+	DB, e = bolt.Open("delta.db", 0600, &bolt.Options{Timeout: 1 * time.Second})
     if e != nil {
         return e
     }
