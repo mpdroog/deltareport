@@ -5,8 +5,8 @@ import (
 	"deltareport/config"
 	"deltareport/model"
 	"deltareport/diff"
+	"deltareport/queue"
 	"flag"
-	//"strings"
 )
 
 func main() {
@@ -37,6 +37,14 @@ func main() {
 
 		// show diff
 		fmt.Printf("%+v\n", lookup)
+		// report diff
+		e = queue.Mail(path, meta.To, lookup)
+		if e == queue.ErrNotFound {
+			e = queue.Newline(path, meta.To, lookup)
+		}
+		if e != nil {
+			panic(e)
+		}
 
 		// save new file positions
 		newPos := make(map[string]int64)

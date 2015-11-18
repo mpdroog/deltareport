@@ -12,14 +12,15 @@
 	"Queues": {
 		"mail": {
 			"admin": {
+				"Beanstalkd": "127.0.0.1:11300",
 				"From": "noreply@itshosted.nl",
 				"To": ["errors@itshosted.nl"],
-				"Subject": "[FILE] Diff"
+				"Subject": "[AUTOGEN] "
 			}
 		},
 		"newline": {
 			"sess": {
-				"To": "127.0.0.1:11300",
+				"Beanstalkd": "127.0.0.1:11300",
 				"Queue": "sess"
 			}
 		}

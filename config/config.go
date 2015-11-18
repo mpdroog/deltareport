@@ -15,12 +15,13 @@ type Config struct {
 	}
 	Queues struct {
 		Mail map[string]struct {
+			Beanstalkd string
 			From string
 			To []string
 			Subject string
 		}
 		Newline map[string]struct {
-			To string
+			Beanstalkd string
 			Queue string
 		}
 	}
