@@ -19,7 +19,7 @@ config.json
 		"mail": {
 			"admin": {
 				"Beanstalkd": "127.0.0.1:11300",
-				"From": "noreply@itshosted.nl",
+				"From": "support",
 				"To": ["errors@itshosted.nl"],
 				"Subject": "[AUTOGEN] "
 			}
