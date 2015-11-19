@@ -16,7 +16,10 @@ config.json
 		},
 		"./test.d": {
 			"To": "sess",
-			"Recurse": true
+			"Recurse": true,
+			"IncludeExt": [
+				".txt", ".log"
+			]
 		}
 	},
 	"Queues": {

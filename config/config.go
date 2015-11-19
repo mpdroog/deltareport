@@ -12,6 +12,7 @@ type Config struct {
 	Files map[string]struct {
 		To string
 		Recurse bool
+		IncludeExt []string
 	}
 	Queues struct {
 		Mail map[string]struct {
