@@ -26,6 +26,7 @@ type Config struct {
 			Queue string
 		}
 	}
+	Db string
 }
 
 var (
@@ -49,7 +50,7 @@ func Init(f string) error {
 		return e
 	}
 
-	DB, e = bolt.Open("delta.db", 0600, &bolt.Options{Timeout: 1 * time.Second})
+	DB, e = bolt.Open(C.Db, 0600, &bolt.Options{Timeout: 1 * time.Second})
     if e != nil {
         return e
     }

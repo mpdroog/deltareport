@@ -28,5 +28,6 @@
 				"Queue": "sess"
 			}
 		}
-	}
+	},
+	"Db": "/var/deltareport/example.db"
 }

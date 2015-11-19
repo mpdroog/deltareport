@@ -37,7 +37,8 @@ config.json
 				"Queue": "sess"
 			}
 		}
-	}
+	},
+	"Db": "/var/deltareport/example.db"
 }
 ```
 This example config scans for changes:
