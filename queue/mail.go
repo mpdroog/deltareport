@@ -41,7 +41,7 @@ func Mail(path string, key string, diff map[string]diff.Res) error {
     m := Email{
     	From: q.From,
     	To: q.To,
-    	Subject: q.Subject + path,
+    	Subject: q.Subject + config.Hostname + " " + path,
     	Text: txt,
     }
 

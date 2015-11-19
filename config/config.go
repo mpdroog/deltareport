@@ -31,6 +31,7 @@ var (
 	C           Config
 	Verbose     bool
 	DB          *bolt.DB
+	Hostname    string
 )
 
 func Init(f string) error {
@@ -39,6 +40,11 @@ func Init(f string) error {
 		return e
 	}
 	if e := json.NewDecoder(r).Decode(&C); e != nil {
+		return e
+	}
+
+	Hostname, e = os.Hostname()
+	if e != nil {
 		return e
 	}
 

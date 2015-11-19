@@ -11,8 +11,9 @@ import (
 )
 
 type LineDiff struct {
-	Path string
-	Line string
+	Hostname string
+	Path     string
+	Line     string
 }
 
 func Newline(path string, key string, diff map[string]diff.Res) error {
@@ -28,6 +29,7 @@ func Newline(path string, key string, diff map[string]diff.Res) error {
     	}
     	for _, line := range strings.Split(meta.Diff, "\n") {
 	    	lines = append(lines, LineDiff{
+	    		Hostname: config.Hostname,
 	    		Path: file,
 	    		Line: line,
 	    	})
