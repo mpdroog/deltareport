@@ -2,6 +2,10 @@ Deltareport
 =============
 Find file/dir changes and queue to Beanstalkd for processing.
 
+> This application does not spawn off go-routines, it does all in the main-routine.
+
+> Please don't run this application multiple times with the same delta.db!
+
 config.json
 ```
 {
@@ -42,6 +46,7 @@ How?
 =============
 Using the keyvaluestore (Bolt) to remember the last read position
 and on change read all changes and write these to the assigned queue.
+It reads/loads it's status from `./delta.db`.
 
 Datastructures
 ==============
