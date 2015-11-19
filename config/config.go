@@ -2,38 +2,38 @@ package config
 
 // Read config.json
 import (
-	"github.com/boltdb/bolt"
 	"encoding/json"
+	"github.com/boltdb/bolt"
 	"os"
 	"time"
 )
 
 type Config struct {
 	Files map[string]struct {
-		To string
-		Recurse bool
+		To         string
+		Recurse    bool
 		IncludeExt []string
 	}
 	Queues struct {
 		Mail map[string]struct {
 			Beanstalkd string
-			From string
-			To []string
-			Subject string
+			From       string
+			To         []string
+			Subject    string
 		}
 		Newline map[string]struct {
 			Beanstalkd string
-			Queue string
+			Queue      string
 		}
 	}
 	Db string
 }
 
 var (
-	C           Config
-	Verbose     bool
-	DB          *bolt.DB
-	Hostname    string
+	C        Config
+	Verbose  bool
+	DB       *bolt.DB
+	Hostname string
 )
 
 func Init(f string) error {
@@ -51,12 +51,12 @@ func Init(f string) error {
 	}
 
 	DB, e = bolt.Open(C.Db, 0600, &bolt.Options{Timeout: 1 * time.Second})
-    if e != nil {
-        return e
-    }
+	if e != nil {
+		return e
+	}
 	return nil
 }
 
 func Close() error {
-    return DB.Close()
+	return DB.Close()
 }

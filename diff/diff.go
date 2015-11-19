@@ -1,14 +1,14 @@
 package diff
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
-	"fmt"
 )
 
 type Res struct {
-	Pos int64
+	Pos  int64
 	Diff string
 }
 
@@ -34,12 +34,12 @@ func File(fileName string, start int64) (Res, error) {
 	if size != start {
 		// change!
 		buf := make([]byte, size-start)
-    	if _, e := file.ReadAt(buf, start); e != nil {
-    		return r, e
-    	}
-    	msg := string(buf)
-    	msg = strings.Trim(msg, "\r")
-    	msg = strings.Trim(msg, "\n")
+		if _, e := file.ReadAt(buf, start); e != nil {
+			return r, e
+		}
+		msg := string(buf)
+		msg = strings.Trim(msg, "\r")
+		msg = strings.Trim(msg, "\n")
 
 		r.Diff = msg
 	}

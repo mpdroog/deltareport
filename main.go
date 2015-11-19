@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"deltareport/config"
-	"deltareport/model"
 	"deltareport/diff"
+	"deltareport/model"
 	"deltareport/queue"
 	"flag"
+	"fmt"
 )
 
 func main() {
