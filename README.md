@@ -58,6 +58,7 @@ type Email struct {
 
 ```
 type LineDiff struct {
+	Hostname string
 	Path string
 	Line string
 }
