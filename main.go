@@ -18,6 +18,8 @@ func main() {
 	if e := config.Init(configPath); e != nil {
 		panic(e)
 	}
+	defer config.Close()
+
 	// TODO: Handle toggling recurse true/false
 	for path, meta := range config.C.Files {
 		pos, e := model.Pos(path)
