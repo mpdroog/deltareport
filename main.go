@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"deltareport/config"
-	"deltareport/model"
 	"deltareport/diff"
+	"deltareport/model"
 	"deltareport/queue"
 	"flag"
+	"fmt"
 )
 
 func main() {
@@ -18,6 +18,8 @@ func main() {
 	if e := config.Init(configPath); e != nil {
 		panic(e)
 	}
+	defer config.Close()
+
 	// TODO: Handle toggling recurse true/false
 	for path, meta := range config.C.Files {
 		pos, e := model.Pos(path)
@@ -27,7 +29,7 @@ func main() {
 
 		lookup := make(map[string]diff.Res)
 		if meta.Recurse {
-			lookup, e = diff.Recurse(path, pos)
+			lookup, e = diff.Recurse(path, pos, meta.IncludeExt)
 		} else {
 			lookup[path], e = diff.File(path, pos[path])
 		}

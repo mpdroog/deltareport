@@ -1,14 +1,14 @@
 package diff
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
-	"fmt"
 )
 
 type Res struct {
-	Pos int64
+	Pos  int64
 	Diff string
 }
 
@@ -34,12 +34,12 @@ func File(fileName string, start int64) (Res, error) {
 	if size != start {
 		// change!
 		buf := make([]byte, size-start)
-    	if _, e := file.ReadAt(buf, start); e != nil {
-    		return r, e
-    	}
-    	msg := string(buf)
-    	msg = strings.Trim(msg, "\r")
-    	msg = strings.Trim(msg, "\n")
+		if _, e := file.ReadAt(buf, start); e != nil {
+			return r, e
+		}
+		msg := string(buf)
+		msg = strings.Trim(msg, "\r")
+		msg = strings.Trim(msg, "\n")
 
 		r.Diff = msg
 	}
@@ -48,7 +48,7 @@ func File(fileName string, start int64) (Res, error) {
 	return r, nil
 }
 
-func Recurse(basedir string, posLookup map[string]int64) (map[string]Res, error) {
+func Recurse(basedir string, posLookup map[string]int64, exts []string) (map[string]Res, error) {
 	out := make(map[string]Res)
 	e := filepath.Walk(basedir, func(path string, f os.FileInfo, err error) error {
 		if path == basedir {
@@ -56,6 +56,18 @@ func Recurse(basedir string, posLookup map[string]int64) (map[string]Res, error)
 			return nil
 		}
 		var e error
+		ok := false
+		for _, ext := range exts {
+			if strings.HasSuffix(path, ext) {
+				ok = true
+				break
+			}
+		}
+		if !ok {
+			// Skip file, not matching pattern
+			return nil
+		}
+
 		out[path], e = File(path, posLookup[path])
 		return e
 	})

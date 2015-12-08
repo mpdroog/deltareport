@@ -1,22 +1,22 @@
 package model
 
 import (
-	"github.com/boltdb/bolt"
-	"deltareport/config"
-	"fmt"
 	"bytes"
+	"deltareport/config"
 	"encoding/json"
+	"fmt"
+	"github.com/boltdb/bolt"
 )
 
 func val(bucket string, key string) ([]byte, error) {
 	var val []byte
 	e := config.DB.Update(func(tx *bolt.Tx) error {
 		b, err := tx.CreateBucketIfNotExists([]byte(bucket))
-	    if err != nil {
-	        return fmt.Errorf("create bucket: %s", err)
-	    }
-    	val = b.Get([]byte(key))
-    	return nil
+		if err != nil {
+			return fmt.Errorf("create bucket: %s", err)
+		}
+		val = b.Get([]byte(key))
+		return nil
 	})
 	return val, e
 }
@@ -24,10 +24,10 @@ func val(bucket string, key string) ([]byte, error) {
 func save(bucket string, key string, val []byte) error {
 	e := config.DB.Update(func(tx *bolt.Tx) error {
 		b, err := tx.CreateBucketIfNotExists([]byte(bucket))
-	    if err != nil {
-	        return fmt.Errorf("create bucket: %s", err)
-	    }
-    	return b.Put([]byte(key), val)
+		if err != nil {
+			return fmt.Errorf("create bucket: %s", err)
+		}
+		return b.Put([]byte(key), val)
 	})
 	return e
 }

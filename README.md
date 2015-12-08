@@ -2,6 +2,10 @@ Deltareport
 =============
 Find file/dir changes and queue to Beanstalkd for processing.
 
+> This application does not spawn off go-routines, it does all in the main-routine.
+
+> Please don't run this application multiple times with the same delta.db!
+
 config.json
 ```
 {
@@ -12,14 +16,17 @@ config.json
 		},
 		"./test.d": {
 			"To": "sess",
-			"Recurse": true
+			"Recurse": true,
+			"IncludeExt": [
+				".txt", ".log"
+			]
 		}
 	},
 	"Queues": {
 		"mail": {
 			"admin": {
 				"Beanstalkd": "127.0.0.1:11300",
-				"From": "noreply@itshosted.nl",
+				"From": "support",
 				"To": ["errors@itshosted.nl"],
 				"Subject": "[AUTOGEN] "
 			}
@@ -30,7 +37,8 @@ config.json
 				"Queue": "sess"
 			}
 		}
-	}
+	},
+	"Db": "/var/deltareport/example.db"
 }
 ```
 This example config scans for changes:
@@ -42,6 +50,7 @@ How?
 =============
 Using the keyvaluestore (Bolt) to remember the last read position
 and on change read all changes and write these to the assigned queue.
+It reads/loads it's status from `./delta.db`.
 
 Datastructures
 ==============
@@ -58,6 +67,7 @@ type Email struct {
 
 ```
 type LineDiff struct {
+	Hostname string
 	Path string
 	Line string
 }
