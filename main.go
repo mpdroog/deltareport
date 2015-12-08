@@ -36,7 +36,9 @@ func main() {
 		}
 
 		// show diff
-		fmt.Printf("%+v\n", lookup)
+		if config.Verbose {
+			fmt.Printf("%+v\n", lookup)
+		}
 		// report diff
 		e = queue.Mail(path, meta.To, lookup)
 		if e == queue.ErrNotFound {
