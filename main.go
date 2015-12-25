@@ -44,7 +44,7 @@ func main() {
 		// report diff
 		e = queue.Mail(path, meta.To, lookup)
 		if e == queue.ErrNotFound {
-			e = queue.Newline(path, meta.To, lookup)
+			e = queue.Newline(path, meta.To, lookup, meta.Tags)
 		}
 		if e != nil {
 			panic(e)

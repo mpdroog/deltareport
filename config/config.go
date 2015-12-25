@@ -11,6 +11,7 @@ import (
 type Config struct {
 	Files map[string]struct {
 		To         string
+		Tags       []string
 		Recurse    bool
 		IncludeExt []string
 	}

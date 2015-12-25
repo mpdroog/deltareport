@@ -14,9 +14,10 @@ type LineDiff struct {
 	Hostname string
 	Path     string
 	Line     string
+	Tags     []string
 }
 
-func Newline(path string, key string, diff map[string]diff.Res) error {
+func Newline(path string, key string, diff map[string]diff.Res, tags []string) error {
 	q, ok := config.C.Queues.Newline[key]
 	if !ok {
 		return ErrNotFound
@@ -32,6 +33,7 @@ func Newline(path string, key string, diff map[string]diff.Res) error {
 				Hostname: config.Hostname,
 				Path:     file,
 				Line:     line,
+				Tags:     tags,
 			})
 		}
 	}

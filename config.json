@@ -6,6 +6,7 @@
 		},
 		"./test.d": {
 			"To": "sess",
+			"Tags": ["important", "cool"],
 			"Recurse": true,
 			"IncludeExt": [
 				".txt",
