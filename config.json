@@ -2,7 +2,8 @@
 	"Files": {
 		"./test.txt": {
 			"To": "admin",
-			"Recurse": false
+			"Recurse": false,
+			"Linediff": true
 		},
 		"./test.d": {
 			"To": "sess",
@@ -11,7 +12,8 @@
 			"IncludeExt": [
 				".txt",
 				".log"
-			]
+			],
+			"Linediff": true
 		}
 	},
 	"Queues": {

@@ -17,8 +17,8 @@ type LineDiff struct {
 	Tags     []string
 }
 
-func Newline(path string, key string, diff map[string]diff.Res, tags []string) error {
-	q, ok := config.C.Queues.Newline[key]
+func Newline(path string, diff map[string]diff.Res, conf config.File) error {
+	q, ok := config.C.Queues.Newline[conf.To]
 	if !ok {
 		return ErrNotFound
 	}
@@ -28,12 +28,21 @@ func Newline(path string, key string, diff map[string]diff.Res, tags []string) e
 		if len(meta.Diff) == 0 {
 			continue
 		}
-		for _, line := range strings.Split(meta.Diff, "\n") {
+		if conf.Linediff {
+			for _, line := range strings.Split(meta.Diff, "\n") {
+				lines = append(lines, LineDiff{
+					Hostname: config.Hostname,
+					Path:     file,
+					Line:     line,
+					Tags:     conf.Tags,
+				})
+			}
+		} else {
 			lines = append(lines, LineDiff{
 				Hostname: config.Hostname,
 				Path:     file,
-				Line:     line,
-				Tags:     tags,
+				Line:     meta.Diff,
+				Tags:     conf.Tags,
 			})
 		}
 	}

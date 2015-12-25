@@ -8,13 +8,16 @@ import (
 	"time"
 )
 
+type File struct {
+	To         string
+	Tags       []string
+	Recurse    bool
+	IncludeExt []string
+	Linediff   bool
+}
+
 type Config struct {
-	Files map[string]struct {
-		To         string
-		Tags       []string
-		Recurse    bool
-		IncludeExt []string
-	}
+	Files map[string]File
 	Queues struct {
 		Mail map[string]struct {
 			Beanstalkd string
