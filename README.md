@@ -70,6 +70,16 @@ This example config scans for changes:
 * Diff the textfile `./test.txt` and e-mails diff using SMTPw (https://github.com/mpdroog/smtpw).
 * Diff all files in `./test.d` and write (messages separated by newline) changes to to sess-queue
 
+Help
+=============
+- "Linediff": true
+  If the diff is "msg1\nmsg2\nmsg3" then msg1/msg2 and msg3 are all added separately in the queue
+  (creating 3 jobs in the queue instead of 1).
+- "Tags": ["channel"]
+  Metadata that only the worker understands.
+- Watching same files/dirs multiple times?
+  Yes possible.
+
 How?
 =============
 Using the keyvaluestore (Bolt) to remember the last read position
@@ -92,7 +102,8 @@ type Email struct {
 ```
 type LineDiff struct {
 	Hostname string
-	Path string
-	Line string
+	Path     string
+	Line     string
+	Tags     []string
 }
 ```
