@@ -86,6 +86,14 @@ Using the keyvaluestore (Bolt) to remember the last read position
 and on change read all changes and write these to the assigned queue.
 It reads/loads it's status from `./delta.db`.
 
+Beanstalkd is used as a persistant queue between this application (diffing)
+and processing (workers).
+
+Workers?
+=============
+- SMTPw - https://github.com/mpdroog/smtpw
+- Slackd - https://github.com/mpdroog/slackd
+
 Datastructures
 ==============
 ```
