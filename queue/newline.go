@@ -38,10 +38,11 @@ func Newline(path string, diff map[string]diff.Res, conf config.File) error {
 				})
 			}
 		} else {
+			txt := meta.Diff
 			lines = append(lines, LineDiff{
 				Hostname: config.Hostname,
 				Path:     file,
-				Line:     meta.Diff,
+				Line:     txt,
 				Tags:     conf.Tags,
 			})
 		}

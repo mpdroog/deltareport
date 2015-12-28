@@ -9,6 +9,7 @@ import (
 )
 
 type File struct {
+	Path       string
 	To         string
 	Tags       []string
 	Recurse    bool
@@ -17,7 +18,7 @@ type File struct {
 }
 
 type Config struct {
-	Files map[string]File
+	Files []File
 	Queues struct {
 		Mail map[string]struct {
 			Beanstalkd string

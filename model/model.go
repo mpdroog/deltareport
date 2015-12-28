@@ -32,9 +32,9 @@ func save(bucket string, key string, val []byte) error {
 	return e
 }
 
-func Pos(path string) (map[string]int64, error) {
+func Pos(bucket string, path string) (map[string]int64, error) {
 	out := make(map[string]int64)
-	raw, e := val("filepos", path)
+	raw, e := val("filepos_" + bucket, path)
 	if e != nil {
 		return out, e
 	}
@@ -49,12 +49,12 @@ func Pos(path string) (map[string]int64, error) {
 	return out, e
 }
 
-func SavePos(path string, vals map[string]int64) error {
+func SavePos(bucket string, path string, vals map[string]int64) error {
 	w := new(bytes.Buffer)
 	enc := json.NewEncoder(w)
 	e := enc.Encode(vals)
 	if e != nil {
 		return e
 	}
-	return save("filepos", path, w.Bytes())
+	return save("filepos_" + bucket, path, w.Bytes())
 }

@@ -1,21 +1,36 @@
 {
-	"Files": {
-		"./test.txt": {
+	"Files": [
+		{
+			"_": "Queue to mail/admin with everything that changed since last time",
+			"Path": "./test.txt",
 			"To": "admin",
 			"Recurse": false,
-			"Linediff": true
+			"Linediff": false
 		},
-		"./test.d": {
+		{
+			"_": "Queue to newline/sess about any changes in subfiles and separate by newline"
+			"Path": "./test.d",
 			"To": "sess",
-			"Tags": ["important", "cool"],
 			"Recurse": true,
 			"IncludeExt": [
 				".txt",
 				".log"
 			],
 			"Linediff": true
+		},
+		{
+			"_": "Queue to newline/slack and write to #channel"
+			"Path": "./test.d",
+			"To": "sess",
+			"Tags": ["channel"],
+			"Recurse": true,
+			"IncludeExt": [
+				".txt",
+				".log"
+			],
+			"Linediff": false
 		}
-	},
+	],
 	"Queues": {
 		"mail": {
 			"admin": {
@@ -28,7 +43,11 @@
 		"newline": {
 			"sess": {
 				"Beanstalkd": "127.0.0.1:11300",
-				"Queue": "sess"
+				"Queue": "linediffs"
+			},
+			"slack": {
+				"Beanstalkd": "127.0.0.1:11300",
+				"Queue": "slack"
 			}
 		}
 	},

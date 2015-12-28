@@ -21,8 +21,9 @@ func main() {
 	defer config.Close()
 
 	// TODO: Handle toggling recurse true/false
-	for path, meta := range config.C.Files {
-		pos, e := model.Pos(path)
+	for _, meta := range config.C.Files {
+		path := meta.Path
+		pos, e := model.Pos(meta.To, path)
 		if e != nil {
 			panic(e)
 		}
@@ -55,7 +56,7 @@ func main() {
 		for file, meta := range lookup {
 			newPos[file] = meta.Pos
 		}
-		if e := model.SavePos(path, newPos); e != nil {
+		if e := model.SavePos(meta.To, path, newPos); e != nil {
 			panic(e)
 		}
 	}

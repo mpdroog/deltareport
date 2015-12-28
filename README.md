@@ -9,37 +9,61 @@ Find file/dir changes and queue to Beanstalkd for processing.
 config.json
 ```
 {
-	"Files": {
-		"./test.txt": {
-			"To": "admin",
-			"Recurse": false
+	"Files": [
+		{
+			"_": "Queue to mail/admin with everything that changed since last time",
+			"Path": "./test.txt",                                                        // File to watch
+			"To": "admin",                                                               // Queue on Queues.mail.admin
+			"Recurse": false,                                                            // Path points to a file
+			"Linediff": false                                                            // Queue all changes in 1 entry
 		},
-		"./test.d": {
+		{
+			"_": "Queue to newline/sess about any changes in subfiles and separate by newline"
+			"Path": "./test.d",                                                          // Dir to watch
+			"To": "sess",                                                                // Queue on Queues.newline.sess
+			"Recurse": true,                                                             // Path points to a directory
+			"IncludeExt": [                                                              // Extensions to watch for change
+				".txt",
+				".log"
+			],
+			"Linediff": true                                                             // Queue by newline(\n)
+		},
+		{
+			"_": "Queue to newline/slack and write to #channel"
+			"Path": "./test.d",
 			"To": "sess",
+			"Tags": ["channel"],                                                         // Write to #channel
 			"Recurse": true,
 			"IncludeExt": [
-				".txt", ".log"
-			]
+				".txt",
+				".log"
+			],
+			"Linediff": false
 		}
-	},
+	],
 	"Queues": {
 		"mail": {
 			"admin": {
-				"Beanstalkd": "127.0.0.1:11300",
+				"Beanstalkd": "127.0.0.1:11300",                                         // Hostname:port to beanstalkd
 				"From": "support",
 				"To": ["errors@itshosted.nl"],
-				"Subject": "[AUTOGEN] "
+				"Subject": "[AUTOGEN] "                                                  // Subject prefix
 			}
 		},
 		"newline": {
 			"sess": {
 				"Beanstalkd": "127.0.0.1:11300",
-				"Queue": "sess"
+				"Queue": "linediffs"                                                     // Beanstalkd tube
+			},
+			"slack": {
+				"Beanstalkd": "127.0.0.1:11300",
+				"Queue": "slack"
 			}
 		}
 	},
-	"Db": "/var/deltareport/example.db"
+	"Db": "/var/deltareport/example.db"                                                  // Database to save file pointers
 }
+
 ```
 This example config scans for changes:
 
