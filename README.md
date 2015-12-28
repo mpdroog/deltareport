@@ -6,6 +6,8 @@ Find file/dir changes and queue to Beanstalkd for processing.
 
 > Please don't run this application multiple times with the same delta.db!
 
+Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
+
 config.json
 ```
 {
