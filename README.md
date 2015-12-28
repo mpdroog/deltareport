@@ -18,7 +18,7 @@ config.json
 			"Linediff": false                                                            // Queue all changes in 1 entry
 		},
 		{
-			"_": "Queue to newline/sess about any changes in subfiles and separate by newline"
+			"_": "Queue to newline/sess about any changes in subfiles and separate by newline",
 			"Path": "./test.d",                                                          // Dir to watch
 			"To": "sess",                                                                // Queue on Queues.newline.sess
 			"Recurse": true,                                                             // Path points to a directory
@@ -29,7 +29,7 @@ config.json
 			"Linediff": true                                                             // Queue by newline(\n)
 		},
 		{
-			"_": "Queue to newline/slack and write to #channel"
+			"_": "Queue to newline/slack and write to #channel",
 			"Path": "./test.d",
 			"To": "sess",
 			"Tags": ["channel"],                                                         // Write to #channel

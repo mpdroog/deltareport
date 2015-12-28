@@ -8,7 +8,7 @@
 			"Linediff": false
 		},
 		{
-			"_": "Queue to newline/sess about any changes in subfiles and separate by newline"
+			"_": "Queue to newline/sess about any changes in subfiles and separate by newline",
 			"Path": "./test.d",
 			"To": "sess",
 			"Recurse": true,
@@ -19,7 +19,7 @@
 			"Linediff": true
 		},
 		{
-			"_": "Queue to newline/slack and write to #channel"
+			"_": "Queue to newline/slack and write to #channel",
 			"Path": "./test.d",
 			"To": "sess",
 			"Tags": ["channel"],
