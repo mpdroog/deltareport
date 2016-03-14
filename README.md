@@ -8,69 +8,68 @@ Find file/dir changes and queue to Beanstalkd for processing.
 
 Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
 
-config.json
+config.toml
 ```
-{
-	"Files": [
-		{
-			"_": "Queue to mail/admin with everything that changed since last time",
-			"Path": "./test.txt",                                                        // File to watch
-			"To": "admin",                                                               // Queue on Queues.mail.admin
-			"Recurse": false,                                                            // Path points to a file
-			"Linediff": false                                                            // Queue all changes in 1 entry
-		},
-		{
-			"_": "Queue to newline/sess about any changes in subfiles and separate by newline",
-			"Path": "./test.d",                                                          // Dir to watch
-			"To": "sess",                                                                // Queue on Queues.newline.sess
-			"Recurse": true,                                                             // Path points to a directory
-			"IncludeExt": [                                                              // Extensions to watch for change
-				".txt",
-				".log"
-			],
-			"Linediff": true                                                             // Queue by newline(\n)
-		},
-		{
-			"_": "Queue to newline/slack and write to #channel",
-			"Path": "./test.d",
-			"To": "sess",
-			"Tags": ["channel"],                                                         // Write to #channel
-			"Recurse": true,
-			"IncludeExt": [
-				".txt",
-				".log"
-			],
-			"Linediff": false
-		}
-	],
-	"Queues": {
-		"mail": {
-			"admin": {
-				"Beanstalkd": "127.0.0.1:11300",                                         // Hostname:port to beanstalkd
-				"From": "support",
-				"To": ["errors@itshosted.nl"],
-				"Subject": "[AUTOGEN] "                                                  // Subject prefix
-			}
-		},
-		"newline": {
-			"sess": {
-				"Beanstalkd": "127.0.0.1:11300",
-				"Queue": "linediffs"                                                     // Beanstalkd tube
-			},
-			"slack": {
-				"Beanstalkd": "127.0.0.1:11300",
-				"Queue": "slack"
-			}
-		}
-	},
-	"Db": "/var/deltareport/example.db"                                                  // Database to save file pointers
-}
+# Directory to scan for additional Files-entries
+# allowing a more modular approach
+Confdir = "./conf.d"
+# Path to auto-created filed file for deltareport
+# to remember it's state
+Db = "/var/deltareport/example.db"
 
+# Output queues
+# The queue type 'mail' and 'newline' indicate
+# what type of JSON is added to the Beanstalkd queue.
+[Queues.mail]
+	[Queues.mail.admin]
+		Beanstalkd = "127.0.0.1:11300"
+		From = "support"
+		To = ["errors@itshosted.nl"]
+		Subject = "[AUTOGEN] "
+
+	[Queues.newline.sess]
+		Beanstalkd = "127.0.0.1:11300"
+		Queue = "linediffs"
+	[Queues.newline.slack]
+		Beanstalkd = "127.0.0.1:11300"
+		Queue = "slack"
+
+[[Files]]
+	# Watch an individual file and send to queues.mail.admin any changed byte
+	Path = "./test.txt"
+	To = "admin"
+	Recurse = false
+	Linediff = false
+
+[[Files]]
+	# Watch a directory recursive and send changes files+lines to queues.newsline.sess
+	# Filtering by file extension+regular expression
+
+	Path = "./test.d"
+	To = "sess"
+	Recurse = true
+	IncludeExt = [
+		".txt",
+		".log"
+	]
+	Regex = "/valid.txt$"
+	# Add every changed line separately to the queue
+	Linediff = true
+
+[[Files]]
+	# Queue to newline/slack and write to #channel
+	# Filtering by file extension
+	Path = "./test.d"
+	To = "sess"
+	Tags = ["channel"]
+	Recurse = true
+	IncludeExt = [
+		".txt",
+		".log"
+	]
+	# Add every changed file to the queue
+	Linediff = false
 ```
-This example config scans for changes:
-
-* Diff the textfile `./test.txt` and e-mails diff using SMTPw (https://github.com/mpdroog/smtpw).
-* Diff all files in `./test.d` and write (messages separated by newline) changes to to sess-queue
 
 Help
 =============
@@ -100,12 +99,12 @@ Datastructures
 ==============
 ```
 type Email struct {
-   From string                 // Key that MUST match From in config
-    To []string
-    Subject string
-    Html string
-    Text string
-    HtmlEmbed map[string]string // file.png => base64(bytes)
+	From string                 // Key that MUST match From in config
+	To []string
+	Subject string
+	Html string
+	Text string
+	HtmlEmbed map[string]string // file.png => base64(bytes)
 }
 ```
 
