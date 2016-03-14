@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"regexp"
+	"deltareport/config"
 )
 
 type Res struct {
@@ -48,7 +50,7 @@ func File(fileName string, start int64) (Res, error) {
 	return r, nil
 }
 
-func Recurse(basedir string, posLookup map[string]int64, exts []string) (map[string]Res, error) {
+func Recurse(basedir string, posLookup map[string]int64, exts []string, regex *regexp.Regexp) (map[string]Res, error) {
 	if _, e := os.Stat(basedir); os.IsNotExist(e) {
 		return nil, e
 	}
@@ -61,6 +63,12 @@ func Recurse(basedir string, posLookup map[string]int64, exts []string) (map[str
 		}
 		var e error
 		ok := false
+		if regex != nil && !regex.MatchString(path) {
+			if config.Verbose {
+				fmt.Printf("REGEX_MISMATCH: %s\n", path)
+			}
+			return nil
+		}
 		for _, ext := range exts {
 			if strings.HasSuffix(path, ext) {
 				ok = true
@@ -69,6 +77,9 @@ func Recurse(basedir string, posLookup map[string]int64, exts []string) (map[str
 		}
 		if !ok {
 			// Skip file, not matching pattern
+			if config.Verbose {
+				fmt.Printf("EXT_MISMATCH: %s\n", path)
+			}
 			return nil
 		}
 

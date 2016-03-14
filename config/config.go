@@ -6,6 +6,7 @@ import (
 	"github.com/boltdb/bolt"
 	"os"
 	"time"
+	"regexp"
 )
 
 type File struct {
@@ -14,6 +15,8 @@ type File struct {
 	Tags       []string
 	Recurse    bool
 	IncludeExt []string
+	Regex      string
+	Regexp     *regexp.Regexp
 	Linediff   bool
 }
 
@@ -49,6 +52,9 @@ func Init(f string) error {
 	if e := json.NewDecoder(r).Decode(&C); e != nil {
 		return e
 	}
+	if e := prepareRegexp(); e != nil {
+		return e
+	}
 
 	Hostname, e = os.Hostname()
 	if e != nil {
@@ -59,6 +65,21 @@ func Init(f string) error {
 	if e != nil {
 		return e
 	}
+	return nil
+}
+
+func prepareRegexp() error {
+	var e error
+	for idx, file := range C.Files {
+		if len(file.Regex) > 0 {
+			file.Regexp, e = regexp.Compile(file.Regex)
+			if e != nil {
+				return e
+			}
+			C.Files[idx] = file
+		}
+	}
+
 	return nil
 }
 

@@ -31,7 +31,7 @@ func main() {
 
 		lookup := make(map[string]diff.Res)
 		if meta.Recurse {
-			lookup, e = diff.Recurse(path, pos, meta.IncludeExt)
+			lookup, e = diff.Recurse(path, pos, meta.IncludeExt, meta.Regexp)
 		} else {
 			lookup[path], e = diff.File(path, pos[path])
 		}
