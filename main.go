@@ -21,6 +21,10 @@ func main() {
 	}
 	defer config.Close()
 
+	if config.Verbose {
+		fmt.Printf("%+v\n", config.C)
+	}
+
 	// TODO: Handle toggling recurse true/false
 	for _, meta := range config.C.Files {
 		path := meta.Path
