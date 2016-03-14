@@ -1,0 +1,54 @@
+Confdir = "./conf.d"
+Db = "/var/deltareport/example.db"
+
+[Queues.mail]
+	[Queues.mail.admin]
+		Beanstalkd = "127.0.0.1:11300"
+		From = "support"
+		To = ["errors@itshosted.nl"]
+		Subject = "[AUTOGEN] "
+
+	[Queues.newline.sess]
+		Beanstalkd = "127.0.0.1:11300"
+		Queue = "linediffs"
+	[Queues.newline.slack]
+		Beanstalkd = "127.0.0.1:11300"
+		Queue = "slack"
+
+[[Files]]
+	# Queue to mail/admin with everything that changed since last time
+	Path = "./does-not-exist.txt"
+    To = "admin"
+    Recurse = true
+    Linediff = false
+
+[[Files]]
+	# Queue to mail/admin with everything that changed since last time
+	Path = "./test.txt"
+	To = "admin"
+	Recurse = false
+	Linediff = false
+
+[[Files]]
+	# Queue to newline/sess about any changes in subfiles and separate by newline
+	Path = "./test.d"
+	To = "sess"
+	Recurse = true
+	IncludeExt = [
+		".txt",
+		".log"
+	]
+	Regex = "/valid.txt$"
+	Linediff = true
+
+[[Files]]
+	# Queue to newline/slack and write to #channel
+	Path = "./test.d"
+	To = "sess"
+	Tags = ["channel"]
+	Recurse = true
+	IncludeExt = [
+		".txt",
+		".log"
+	]
+	Linediff = false

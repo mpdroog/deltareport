@@ -13,7 +13,7 @@ import (
 func main() {
 	configPath := ""
 	flag.BoolVar(&config.Verbose, "v", false, "Verbose-mode (log more)")
-	flag.StringVar(&configPath, "c", "./config.json", "Path to config.json")
+	flag.StringVar(&configPath, "c", "./config.toml", "Path to config.toml")
 	flag.Parse()
 
 	if e := config.Init(configPath); e != nil {

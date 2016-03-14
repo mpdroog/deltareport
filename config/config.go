@@ -1,12 +1,12 @@
 package config
 
-// Read config.json
 import (
-	"encoding/json"
+	"github.com/BurntSushi/toml"
 	"github.com/boltdb/bolt"
 	"os"
 	"time"
 	"regexp"
+	"fmt"
 )
 
 type File struct {
@@ -49,9 +49,11 @@ func Init(f string) error {
 	if e != nil {
 		return e
 	}
-	if e := json.NewDecoder(r).Decode(&C); e != nil {
-		return e
+	defer r.Close()
+	if _, e := toml.DecodeReader(r, &C); e != nil {
+		return fmt.Errorf("TOML: %s", e)
 	}
+
 	if e := prepareRegexp(); e != nil {
 		return e
 	}
