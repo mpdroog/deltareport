@@ -7,6 +7,8 @@ import (
 	"time"
 	"regexp"
 	"fmt"
+	"strings"
+	"path/filepath"
 )
 
 type File struct {
@@ -21,6 +23,7 @@ type File struct {
 }
 
 type Config struct {
+	Confdir string
 	Files []File
 	Queues struct {
 		Mail map[string]struct {
@@ -53,6 +56,9 @@ func Init(f string) error {
 	if _, e := toml.DecodeReader(r, &C); e != nil {
 		return fmt.Errorf("TOML: %s", e)
 	}
+	if e := loadConfDir(); e != nil {
+		return e
+	}
 
 	if e := prepareRegexp(); e != nil {
 		return e
@@ -69,6 +75,35 @@ func Init(f string) error {
 	}
 	return nil
 }
+
+func loadConfDir() error {
+	if len(C.Confdir) > 0 {
+		return filepath.Walk(C.Confdir, func(path string, f os.FileInfo, err error) error {
+			if path == C.Confdir {
+				// ignore root
+				return nil
+			}
+
+			if strings.HasSuffix(path, ".toml") {
+				r, e := os.Open(path)
+				if e != nil {
+					return e
+				}
+				var f File
+				if _, e := toml.DecodeReader(r, &f); e != nil {
+					r.Close()
+					return fmt.Errorf("TOML(%s): %s", path, e)
+				}
+				r.Close()
+				C.Files = append(C.Files, f)
+			}
+
+			return nil
+		})
+	}
+	return nil
+}
+
 
 func prepareRegexp() error {
 	var e error
