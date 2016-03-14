@@ -7,6 +7,7 @@ import (
 	"deltareport/queue"
 	"flag"
 	"fmt"
+	"os"
 )
 
 func main() {
@@ -35,6 +36,10 @@ func main() {
 			lookup[path], e = diff.File(path, pos[path])
 		}
 		if e != nil {
+			if os.IsNotExist(e) {
+				fmt.Fprintf(os.Stderr, "WARN: %s\n", e.Error())
+				continue
+			}
 			panic(e)
 		}
 

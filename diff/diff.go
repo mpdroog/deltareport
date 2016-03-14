@@ -49,6 +49,10 @@ func File(fileName string, start int64) (Res, error) {
 }
 
 func Recurse(basedir string, posLookup map[string]int64, exts []string) (map[string]Res, error) {
+	if _, e := os.Stat(basedir); os.IsNotExist(e) {
+		return nil, e
+	}
+
 	out := make(map[string]Res)
 	e := filepath.Walk(basedir, func(path string, f os.FileInfo, err error) error {
 		if path == basedir {
