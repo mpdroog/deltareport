@@ -16,6 +16,7 @@
 				".txt",
 				".log"
 			],
+			"Regex": "\/valid\\.txt$",
 			"Linediff": true
 		},
 		{
