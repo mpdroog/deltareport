@@ -1,5 +1,0 @@
-# Queue to mail/admin with everything that changed since last time
-Path = "./does-not-exist.txt"
-To = "admin"
-Recurse = true
-Linediff = false

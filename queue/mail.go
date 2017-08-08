@@ -1,12 +1,13 @@
 package queue
 
 import (
-	"bytes"
+	//"bytes"
 	"deltareport/config"
 	"deltareport/diff"
-	"encoding/json"
-	"github.com/mpdroog/beanstalkd"
-	"time"
+	"fmt"
+	//"encoding/json"
+	//"github.com/mpdroog/beanstalkd"
+	//"time"
 )
 
 type Email struct {
@@ -19,7 +20,7 @@ type Email struct {
 }
 
 func Mail(path string, key string, diff map[string]diff.Res) error {
-	q, ok := config.C.Queues.Mail[key]
+	q, ok := config.C.Queues[key]
 	if !ok {
 		return ErrNotFound
 	}
@@ -35,17 +36,23 @@ func Mail(path string, key string, diff map[string]diff.Res) error {
 	}
 	if counter == 0 {
 		// no diff
+		if config.Verbose {
+			fmt.Printf("Empty diff\n")
+		}
 		return nil
 	}
 
-	m := Email{
+	/*m := Email{
 		From:    q.From,
 		To:      q.To,
 		Subject: q.Subject + config.Hostname + " " + path,
 		Text:    txt,
-	}
+	}*/
+	subject := config.Hostname + " " + path
+	fmt.Printf("Mail %s\n", subject)
+	return MailSend(q, subject, txt)
 
-	w := new(bytes.Buffer)
+	/*w := new(bytes.Buffer)
 	enc := json.NewEncoder(w)
 	if e := enc.Encode(m); e != nil {
 		return e
@@ -62,5 +69,5 @@ func Mail(path string, key string, diff map[string]diff.Res) error {
 		1, 0*time.Second, 5*time.Second,
 		w.Bytes(),
 	)
-	return e
+	return e*/
 }

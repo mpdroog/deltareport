@@ -52,11 +52,7 @@ func main() {
 			fmt.Printf("%+v\n", lookup)
 		}
 		// report diff
-		e = queue.Mail(path, meta.To, lookup)
-		if e == queue.ErrNotFound {
-			e = queue.Newline(path, lookup, meta)
-		}
-		if e != nil {
+		if e = queue.Mail(path, meta.To, lookup); e != nil {
 			panic(e)
 		}
 
@@ -67,6 +63,9 @@ func main() {
 		}
 		if e := model.SavePos(meta.To, path, newPos); e != nil {
 			panic(e)
+		}
+		if config.Verbose {
+			fmt.Printf("Updated file positions\n")
 		}
 	}
 }

@@ -14,29 +14,26 @@ import (
 type File struct {
 	Path       string
 	To         string
-	Tags       []string
 	Recurse    bool
 	IncludeExt []string
 	Regex      string
 	Regexp     *regexp.Regexp
-	Linediff   bool
+}
+type Queue struct {
+	User string
+	Pass string
+	Host string
+	Port int
+	To []string
+	From string
+	FromName string
+	Subject string
 }
 
 type Config struct {
 	Confdir string
 	Files []File
-	Queues struct {
-		Mail map[string]struct {
-			Beanstalkd string
-			From       string
-			To         []string
-			Subject    string
-		}
-		Newline map[string]struct {
-			Beanstalkd string
-			Queue      string
-		}
-	}
+	Queues map[string]Queue
 	Db string
 }
 
@@ -72,6 +69,13 @@ func Init(f string) error {
 	DB, e = bolt.Open(C.Db, 0600, &bolt.Options{Timeout: 1 * time.Second})
 	if e != nil {
 		return e
+	}
+
+	// test config
+	for _, ln := range C.Files {
+		if _, ok := C.Queues[ln.To]; !ok {
+			return fmt.Errorf("File(%s) has non-existing Queue(To=%s)", ln.Path, ln.To)
+		}
 	}
 	return nil
 }
