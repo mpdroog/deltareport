@@ -2,11 +2,11 @@ package diff
 
 import (
 	"fmt"
+	"github.com/mpdroog/deltareport/config"
 	"os"
 	"path/filepath"
-	"strings"
 	"regexp"
-	"github.com/mpdroog/deltareport/config"
+	"strings"
 )
 
 type Res struct {

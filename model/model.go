@@ -2,10 +2,10 @@ package model
 
 import (
 	"bytes"
-	"github.com/mpdroog/deltareport/config"
 	"encoding/json"
 	"fmt"
 	"github.com/boltdb/bolt"
+	"github.com/mpdroog/deltareport/config"
 )
 
 func val(bucket string, key string) ([]byte, error) {
@@ -34,7 +34,7 @@ func save(bucket string, key string, val []byte) error {
 
 func Pos(bucket string, path string) (map[string]int64, error) {
 	out := make(map[string]int64)
-	raw, e := val("filepos_" + bucket, path)
+	raw, e := val("filepos_"+bucket, path)
 	if e != nil {
 		return out, e
 	}
@@ -56,5 +56,5 @@ func SavePos(bucket string, path string, vals map[string]int64) error {
 	if e != nil {
 		return e
 	}
-	return save("filepos_" + bucket, path, w.Bytes())
+	return save("filepos_"+bucket, path, w.Bytes())
 }

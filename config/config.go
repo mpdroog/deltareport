@@ -1,14 +1,14 @@
 package config
 
 import (
+	"fmt"
 	"github.com/BurntSushi/toml"
 	"github.com/boltdb/bolt"
 	"os"
-	"time"
-	"regexp"
-	"fmt"
-	"strings"
 	"path/filepath"
+	"regexp"
+	"strings"
+	"time"
 )
 
 type File struct {
@@ -24,8 +24,8 @@ type File struct {
 
 type Config struct {
 	Confdir string
-	Files []File
-	Queues struct {
+	Files   []File
+	Queues  struct {
 		Mail map[string]struct {
 			Beanstalkd string
 			From       string
@@ -103,7 +103,6 @@ func loadConfDir() error {
 	}
 	return nil
 }
-
 
 func prepareRegexp() error {
 	var e error
