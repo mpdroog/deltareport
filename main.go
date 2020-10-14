@@ -1,10 +1,10 @@
 package main
 
 import (
-	"deltareport/config"
-	"deltareport/diff"
-	"deltareport/model"
-	"deltareport/queue"
+	"github.com/mpdroog/deltareport/config"
+	"github.com/mpdroog/deltareport/diff"
+	"github.com/mpdroog/deltareport/model"
+	"github.com/mpdroog/deltareport/queue"
 	"flag"
 	"fmt"
 	"os"

@@ -2,7 +2,7 @@ package model
 
 import (
 	"bytes"
-	"deltareport/config"
+	"github.com/mpdroog/deltareport/config"
 	"encoding/json"
 	"fmt"
 	"github.com/boltdb/bolt"

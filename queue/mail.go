@@ -2,8 +2,8 @@ package queue
 
 import (
 	"bytes"
-	"deltareport/config"
-	"deltareport/diff"
+	"github.com/mpdroog/deltareport/config"
+	"github.com/mpdroog/deltareport/diff"
 	"encoding/json"
 	"github.com/mpdroog/beanstalkd"
 	"time"

@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 	"regexp"
-	"deltareport/config"
+	"github.com/mpdroog/deltareport/config"
 )
 
 type Res struct {
