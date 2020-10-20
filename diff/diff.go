@@ -30,7 +30,9 @@ func File(fileName string, start int64) (Res, error) {
 	size := stat.Size()
 
 	if size < start {
-		// reset as file got truncated
+		if config.Verbose {
+			fmt.Printf("reset as file(%s) got truncated (size=%d, start=%d)", fileName, size, start)
+		}
 		start = 0
 	}
 	if size != start {

@@ -13,16 +13,21 @@ import (
 func main() {
 	configPath := ""
 	flag.BoolVar(&config.Verbose, "v", false, "Verbose-mode (log more)")
+	flag.BoolVar(&config.Debug, "d", false, "Debug-mode (log diff msgs)")
 	flag.StringVar(&configPath, "c", "./config.toml", "Path to config.toml")
 	flag.Parse()
 
 	if e := config.Init(configPath); e != nil {
 		panic(e)
 	}
-	defer config.Close()
+	defer func() {
+		if e := config.Close(); e != nil {
+			panic(e)
+		}
+	}()
 
 	if config.Verbose {
-		fmt.Printf("%+v\n", config.C)
+		fmt.Printf("Config=%+v\n", config.C)
 	}
 
 	// TODO: Handle toggling recurse true/false
@@ -31,6 +36,9 @@ func main() {
 		pos, e := model.Pos(meta.To, path)
 		if e != nil {
 			panic(e)
+		}
+		if config.Verbose {
+			fmt.Printf("File(%s) pos=%+v\n", path, pos)
 		}
 
 		lookup := make(map[string]diff.Res)
@@ -48,9 +56,11 @@ func main() {
 		}
 
 		// show diff
-		if config.Verbose {
+		if config.Debug {
 			fmt.Printf("diff=%+v\n", lookup)
 		}
+
+		sumbytes := 0
 		// allow filtering by JS
 		// TODO: interrupt handler to limit execution to N-seconds?
 		vm := config.ScriptEngine
@@ -67,24 +77,19 @@ func main() {
 					panic(e)
 				}
 				if config.Verbose {
-					fmt.Printf("script(%s) out=%s\n", name, diff)
+					fmt.Printf("script(%s)\n", name)
 				}
 
-				if len(diff) == 0 {
-					// strip out
-					delete(lookup, k)
-					continue
-				}
-
+				sumbytes += len(diff)
 				v.Diff = diff
 				lookup[k] = v
 			}
 		}
 		if config.Verbose {
-			fmt.Printf("script.filtered diff=%+v\n", lookup)
+			fmt.Printf("script.filtered bytes=%d\n", sumbytes)
 		}
 
-		if len(lookup) > 0 {
+		if sumbytes > 0 {
 			// report diff
 			e = queue.Mail(path, meta.To, lookup)
 			if e == queue.ErrNotFound {

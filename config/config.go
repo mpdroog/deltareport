@@ -46,6 +46,7 @@ type Config struct {
 var (
 	C        Config
 	Verbose  bool
+	Debug    bool
 	DB       *bolt.DB
 	Hostname string
 

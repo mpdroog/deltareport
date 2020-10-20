@@ -18,10 +18,16 @@ func val(bucket string, key string) ([]byte, error) {
 		val = b.Get([]byte(key))
 		return nil
 	})
+	if config.Verbose {
+		fmt.Printf("model.load(%s) k(%s) val=%s", bucket, key, val)
+	}
 	return val, e
 }
 
 func save(bucket string, key string, val []byte) error {
+	if config.Verbose {
+		fmt.Printf("model.save(%s) k(%s) val=%s", bucket, key, val)
+	}
 	e := config.DB.Update(func(tx *bolt.Tx) error {
 		b, err := tx.CreateBucketIfNotExists([]byte(bucket))
 		if err != nil {
