@@ -1,15 +1,24 @@
-/*
-    Filter out any strings in the admin-queue
-	available variables: queue, body
+/**
+ * NGINX filter the accesslog
  */
 if (queue !== "admin") {
-   body;
+	body;
 } else {
+	var ignores = [
+		"access forbidden by rule",
+		"Uncaught Error: Load timeout for modules:"
+	];
 	var lines = [];
-	var input = body.split("\n");
-	for (var i = 0; i < input.length; i++) {
-	  if (input[i] === "Hello world2!") continue;
-	  lines.push(input[i]);
-	}
+        body.split("\n").forEach(function(line) {
+		var ok = true;
+		ignores.forEach(function(ignore) {
+			if (line.indexOf(ignore) !== -1) {
+				ok = false;
+			}
+		});
+		if (ok) {
+			lines.push(line);
+		}
+	});
 	lines.join("\n");
 }
