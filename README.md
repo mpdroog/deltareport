@@ -12,10 +12,16 @@ config.toml
 ```
 # Directory to scan for additional Files-entries
 # allowing a more modular approach
+# (only read on start)
 Confdir = "./conf.d"
 # Path to auto-created filed file for deltareport
 # to remember it's state
 Db = "/var/deltareport/example.db"
+# Read all .JS-files from the script.d-dir and
+# if none have errors run them one by one and run
+# to filter out text from the diffs
+# (only read on start)
+Scriptdir="./script.d"
 
 # Output queues
 # The queue type 'mail' and 'newline' indicate
@@ -89,6 +95,23 @@ It reads/loads it's status from `./delta.db`.
 
 Beanstalkd is used as a persistant queue between this application (diffing)
 and processing (workers).
+
+Scripting engine?
+=============
+Yes, there is a small JavaScript-engine (Otto, native Go) embedded
+into the application. By adding one or more JS-files to the `Scriptdir` these
+can be executed just before the diff it sent to the processor for sending.
+
+The idea is very simple:
+Let the script 'filter' out anything you don't want reported by adjusting the
+input text and returning the new text.
+
+Scripts get two variables:
+`queue` and `body`, where queue contains the channel it wants to send to and body
+contains the text it will send.
+
+Example added in `script.d/example.js` where for the admin-queue the 'Hello world2!' line
+is removed.
 
 Workers?
 =============

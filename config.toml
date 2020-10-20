@@ -1,5 +1,6 @@
 Confdir = "./conf.d"
-Db = "/var/deltareport/example.db"
+Db = "test.db"
+Scriptdir = "./script.d"
 
 [Queues.mail]
 	[Queues.mail.admin]
