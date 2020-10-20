@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"github.com/robertkrimen/otto"
 )
 
 type File struct {
@@ -25,6 +26,8 @@ type File struct {
 type Config struct {
 	Confdir string
 	Files   []File
+	Scriptdir string
+
 	Queues  struct {
 		Mail map[string]struct {
 			Beanstalkd string
@@ -45,6 +48,9 @@ var (
 	Verbose  bool
 	DB       *bolt.DB
 	Hostname string
+
+	ScriptEngine *otto.Otto
+	Scripts map[string]*otto.Script
 )
 
 func Init(f string) error {
@@ -57,6 +63,11 @@ func Init(f string) error {
 		return fmt.Errorf("TOML: %s", e)
 	}
 	if e := loadConfDir(); e != nil {
+		return e
+	}
+
+	Scripts = make(map[string]*otto.Script)
+	if e := loadScriptDir(); e != nil {
 		return e
 	}
 
@@ -96,6 +107,34 @@ func loadConfDir() error {
 				}
 				r.Close()
 				C.Files = append(C.Files, f)
+			}
+
+			return nil
+		})
+	}
+	return nil
+}
+
+func loadScriptDir() error {
+	if len(C.Scriptdir) > 0 {
+		ScriptEngine = otto.New()
+		return filepath.Walk(C.Scriptdir, func(path string, f os.FileInfo, err error) error {
+			if path == C.Scriptdir {
+				// ignore root
+				return nil
+			}
+
+			if strings.HasSuffix(path, ".js") {
+				r, e := os.Open(path)
+				if e != nil {
+					return e
+				}
+				p, e := ScriptEngine.Compile(path, r)
+				if e != nil {
+					return e
+				}
+				r.Close()
+				Scripts[path] = p
 			}
 
 			return nil
