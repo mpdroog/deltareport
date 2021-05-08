@@ -2,13 +2,15 @@ package config
 
 import (
 	"fmt"
-	"github.com/BurntSushi/toml"
-	"github.com/boltdb/bolt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/boltdb/bolt"
+	"github.com/jinzhu/configor"
 	"github.com/robertkrimen/otto"
 )
 
@@ -21,14 +23,18 @@ type File struct {
 	Regex      string
 	Regexp     *regexp.Regexp
 	Linediff   bool
+	// ContainerName name of docker container
+	ContainerName string
+	// ContainerNameStrict Search fo exact name
+	ContainerNameStrict bool
 }
 
 type Config struct {
-	Confdir string
-	Files   []File
+	Confdir   string
+	Files     []File
 	Scriptdir string
 
-	Queues  struct {
+	Queues struct {
 		Mail map[string]struct {
 			Beanstalkd string
 			From       string
@@ -51,16 +57,12 @@ var (
 	Hostname string
 
 	ScriptEngine *otto.Otto
-	Scripts map[string]*otto.Script
+	Scripts      map[string]*otto.Script
 )
 
 func Init(f string) error {
-	r, e := os.Open(f)
-	if e != nil {
-		return e
-	}
-	defer r.Close()
-	if _, e := toml.DecodeReader(r, &C); e != nil {
+	var e error
+	if e := configor.Load(&C, f); e != nil {
 		return fmt.Errorf("TOML: %s", e)
 	}
 	if e := loadConfDir(); e != nil {
@@ -96,17 +98,43 @@ func loadConfDir() error {
 				return nil
 			}
 
-			if strings.HasSuffix(path, ".toml") {
-				r, e := os.Open(path)
-				if e != nil {
-					return e
-				}
+			if strings.HasSuffix(path, ".toml") || strings.HasSuffix(path, ".yaml") || strings.HasSuffix(path, ".yml") {
 				var f File
-				if _, e := toml.DecodeReader(r, &f); e != nil {
-					r.Close()
-					return fmt.Errorf("TOML(%s): %s", path, e)
+				if e := configor.Load(&f, path); e != nil {
+					return fmt.Errorf("loading config (%s): %s", path, e)
 				}
-				r.Close()
+
+				// Build path for containers
+				if len(f.ContainerName) > 0 {
+					commandargs := fmt.Sprintf("name=%s", f.ContainerName)
+					if f.ContainerNameStrict {
+						commandargs = fmt.Sprintf("name=^/%s$", f.ContainerName)
+					}
+					id, e := exec.Command("docker", "ps", "--format='{{.ID}}'", "-f", commandargs).Output()
+					// Cleanup of id
+					container_id := strings.ReplaceAll(string(id), "\n", "")
+					container_id = strings.ReplaceAll(container_id, "'", "")
+
+					if e != nil || len(container_id) < 1 {
+						if Verbose {
+							fmt.Printf("can't find container %s\n", f.ContainerName)
+						}
+						return nil
+					}
+
+					lp, e := exec.Command("docker", "inspect", "--format='{{.LogPath}}'", container_id).Output()
+					logpath := strings.ReplaceAll(string(lp), "\n", "")
+					logpath = strings.ReplaceAll(logpath, "'", "")
+					if e != nil || len(string(logpath)) < 1 {
+						if Verbose {
+							fmt.Printf("can't inspect container %s\n", f.ContainerName)
+						}
+						return nil
+					}
+					if len(logpath) > 0 {
+						f.Path = string(logpath)
+					}
+				}
 				C.Files = append(C.Files, f)
 			}
 
