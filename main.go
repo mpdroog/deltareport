@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+
 	"github.com/mpdroog/deltareport/config"
 	"github.com/mpdroog/deltareport/diff"
 	"github.com/mpdroog/deltareport/model"
 	"github.com/mpdroog/deltareport/queue"
-	"os"
 )
 
 func main() {
@@ -87,6 +88,11 @@ func main() {
 		}
 		if config.Verbose {
 			fmt.Printf("script.filtered bytes=%d\n", sumbytes)
+		}
+
+		// No scripts found so difference in sumbytes
+		if sumbytes == 0 && len(lookup) > 0 {
+			sumbytes = len(lookup)
 		}
 
 		if sumbytes > 0 {

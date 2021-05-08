@@ -1,0 +1,7 @@
+# Container name shown in output `docker ps`
+ContainerName = "nginx"
+# ContainerNameStrict will search for exact match when set true
+ContainerNameStrict = false
+Linediff = false
+Recurse = true
+To = "admin"

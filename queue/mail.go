@@ -3,10 +3,14 @@ package queue
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"os/exec"
+	"strings"
+	"time"
+
 	"github.com/mpdroog/beanstalkd"
 	"github.com/mpdroog/deltareport/config"
 	"github.com/mpdroog/deltareport/diff"
-	"time"
 )
 
 type Email struct {
@@ -29,6 +33,18 @@ func Mail(path string, key string, diff map[string]diff.Res) error {
 	for file, meta := range diff {
 		if len(meta.Diff) == 0 {
 			continue
+		}
+		if strings.Contains(path, "/var/lib/docker/containers/") {
+			// get id from path name
+			id := strings.Replace(path, "/var/lib/docker/containers/", "", -1)
+			id = fmt.Sprintf("id=%s", id[0:12])
+
+			n, e := exec.Command("docker", "ps", "--format='{{.Names}}'", "-f", id).Output()
+			name := strings.ReplaceAll(string(n), "\n", "")
+			name = strings.ReplaceAll(name, "'", "")
+			if e == nil || len(name) > 0 {
+				txt += fmt.Sprintf("container_name: %s\n", name)
+			}
 		}
 		counter += len(meta.Diff)
 		txt += file + "\n===============================\n\n" + meta.Diff + "\n\n"
